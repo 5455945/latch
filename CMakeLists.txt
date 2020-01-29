@@ -128,13 +128,26 @@ PRIVATE
 if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
+    message(STATUS "  include\t: ${CONAN_INCLUDE_DIRS}")
+    message(STATUS "  dir    \t: ${CONAN_LIB_DIRS}")
+    message(STATUS "  libs   \t: ${CONAN_LIBS}")
+    message(STATUS "  defines\t: ${CONAN_DEFINES}")
+
     target_include_directories(latch_test
     PRIVATE
         ${CONAN_INCLUDE_DIRS}
     )
+    target_link_directories(latch_test
+    PRIVATE
+        ${CONAN_LIB_DIRS}
+    )
     target_link_libraries(latch_test
     PRIVATE
         ${CONAN_LIBS}
+    )
+    target_compile_options(latch_test
+    PRIVATE
+        ${CONAN_DEFINES}
     )
 else()
     # use 'external/catch2.zip' if not found

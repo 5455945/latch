@@ -52,7 +52,9 @@ elseif(${CMAKE_CXX_COMPILER_ID} MATCHES MSVC)
     )
 endif()
 
-if(WIN32)
+if(ANDROID)
+    message(STATUS "using Android: ${ANDROID_NDK}")
+elseif(WIN32)
     set_target_properties(latch
     PROPERTIES
         WINDOWS_EXPORT_ALL_SYMBOLS True
@@ -108,6 +110,9 @@ install(FILES           ${VERSION_FILE_PATH}
         DESTINATION     ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}
 )
 
+if(NOT BUILD_TESTING)
+    return()
+endif()
 enable_testing()
 find_package(Threads REQUIRED)
 

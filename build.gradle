@@ -1,0 +1,107 @@
+
+buildscript {    
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.2'
+    }
+}
+
+repositories {
+    google()
+    jcenter()
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 27
+
+    splits {
+        abi {
+            enable true
+            universalApk true 
+            reset()
+            include "arm64-v8a", "armeabi-v7a", "x86_64"
+        }
+    }
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 28
+
+        versionCode 5
+        versionName "1.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared", "-DBUILD_SHARED_LIBS=true"
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            version "3.16.2" 
+            path "CMakeLists.txt"
+        }
+    }
+    
+    packagingOptions {
+        pickFirst 'lib/**'
+    }
+
+    sourceSets {
+        main.setRoot('android')
+        main {
+            manifest.srcFile 'android/AndroidManifest.xml'
+        }
+
+        androidTest.setRoot('android/test')
+        androidTest {
+            java.srcDir 'android/test'
+            assets.srcDir 'android/test/assets'
+        }
+        main.jniLibs.srcDirs = ['android/jniLibs']
+        androidTest.jniLibs.srcDirs = ['android/jniLibs']
+    }
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen {false}
+                showStandardStreams = true
+            }
+        }
+    } 
+}
+
+assemble.doLast
+{
+    copy {
+        from 'build/intermediates/cmake/debug/obj'
+        into 'install/libs/debug'
+    }
+    copy {
+        from 'build/intermediates/cmake/release/obj'
+        into 'install/libs/release'
+    }
+    copy {
+        from 'latch.h'
+        into 'install/include'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+
+    implementation 'org.jetbrains:annotations-java5:15.0'
+}

@@ -12,6 +12,10 @@
 #include <linux/futex.h>
 // clang-format on
 
+#if defined(__ANDROID_API__) && __ANDROID_API__ >= 24
+static_assert(__ANDROID_API__ >= 24, "expect Android API level 24 or higher");
+#endif
+
 /**
  * @param target    On all platforms, futexes are four-byte integers
  * @param expected
